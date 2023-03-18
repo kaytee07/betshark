@@ -20,6 +20,7 @@ const { deleteOne } = require('./Schema/User');
 const { url } = require('inspector');
 const upload = multer({ storage});
 const dbUrl = process.env.DB_URL;
+const PORT = 8000;
 //mongodb://localhost:27017/users
 //process.env.DB_URL
 
@@ -40,7 +41,26 @@ app.set('views', path.join(__dirname,'/views'))
 
 
 //mongoose.connect(dbUrl);
-mongoose.connect(dbUrl);
+const connectDB = async () => {
+	try {
+	  const conn = await mongoose.connect(dbUrl);
+	  console.log(`MongoDB Connected: ${conn.connection.host}`);
+	} catch (error) {
+	  console.log(error);
+	  process.exit(1);
+	}
+  }
+
+  function errorHandler(err, req, res, next) {
+	if (err instanceof multer.MulterError) {
+	  // Multer error occurred
+	  res.status(500).json({ error: err.message });
+	} else {
+	  // Some other error occurred
+	  console.log(err)
+	  res.status(500).json({ error: err });
+	}
+  }
 
 const requireLogin = (req, res, next) => {
 	if(!req.session.user_id){
@@ -526,8 +546,14 @@ app.get("/weekendpay", (req, res) => {
 });
 
 
-app.listen(8000, ()=> {
-console.log("LISTENING ON PORT 8000")
+app.use(errorHandler);
+// app.listen(8000, ()=> {
+// console.log("LISTENING ON PORT 3008")
+// })
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log("listening for requests");
+    })
 })
 
 app.get('*', (req, res)=> {
