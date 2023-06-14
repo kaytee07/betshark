@@ -245,30 +245,30 @@ app.get('/fixedgame',async (req,res)=> {
 			return;
 	}
 
-
-	if(!reference)
+	res.render('fixedgame.ejs',{info})
+	/*if(!reference)
 	{
 		res.redirect('/fixedgamepay');
 		return;
-	}
+	}*/
 
-	paystack.transaction.verify(reference, async function(error, body) {
-        if (error) {
-            res.redirect('/fixedgamepay');
-        }
-        if (body.data.status === "success" && req.session.reference === reference || user_id) {      
-			const image = await Image.find({type:"fixedgame"});
-			const info = {
-				user_id,
-				image
-			}
-			res.render('fixedgame.ejs',{info})
-			req.session.reference = null;
-			return;
-        } else {      
-            res.redirect('/fixedgamepay');
-        }
-    });
+	// paystack.transaction.verify(reference, async function(error, body) {
+    //     if (error) {
+    //         res.redirect('/fixedgamepay');
+    //     }
+    //     if (body.data.status === "success" && req.session.reference === reference || user_id) {      
+	// 		const image = await Image.find({type:"fixedgame"});
+	// 		const info = {
+	// 			user_id,
+	// 			image
+	// 		}
+			
+	// 		req.session.reference = null;
+	// 		return;
+    //     } else {      
+    //         res.redirect('/fixedgamepay');
+    //     }
+    // });
 
 })
 
